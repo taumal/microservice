@@ -1,2 +1,11 @@
 server:
   port: 9002
+
+spring:
+  application:
+    name: company-service
+
+eureka:
+  instance:
+    hostname: localhost
+    appname: company-service

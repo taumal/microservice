@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -18,8 +19,12 @@ public class CompanyController {
     @Autowired
     private final CompanyServiceImpl service;
 
-    public CompanyController(CompanyServiceImpl service) {
+    @Autowired
+    private final RestTemplate restTemplate;
+
+    public CompanyController(CompanyServiceImpl service, RestTemplate restTemplate) {
         this.service = service;
+        this.restTemplate = restTemplate;
     }
 
     @InitBinder
@@ -35,9 +40,14 @@ public class CompanyController {
     }
 
     @GetMapping("/find-by-id/{id}")
-    public ResponseEntity<?> getCompany(@PathVariable Long id) {
+    public Company getCompany(@PathVariable Long id) {
         Company company = this.service.getCompany(id);
-        return company != null ? ResponseEntity.ok(company) : ResponseEntity.ok(HttpStatus.NO_CONTENT);
+
+        // http://localhost:9001/employee/find-by-company/2002
+        List employees = restTemplate.getForObject("http://localhost:9001/api/employee/find-by-company/" + company.getId(), List.class);
+        company.setEmployees(employees);
+
+        return company;
     }
 
 }
