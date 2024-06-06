@@ -1,0 +1,11 @@
+server:
+  port: 8989
+
+spring:
+  application:
+    name: api-gateway
+
+eureka:
+  instance:
+    hostname: localhost
+    appname: api-gateway
